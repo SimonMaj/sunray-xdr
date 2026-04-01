@@ -4,6 +4,18 @@ Free and open-source XDR brightness booster for MacBook Pro. Like [Vivid](https:
 
 Unlocks the full brightness of your Liquid Retina XDR display beyond the standard SDR limit. Your MacBook Pro can go up to 1600 nits — this tool lets you use it.
 
+## Features
+
+- Boosts screen brightness beyond the standard 500 nit SDR limit using XDR hardware
+- No white tint or washed-out colors — uses multiply compositing to preserve colors perfectly
+- Menu bar icon with brightness presets (1.5x, 2.0x, 3.0x, 4.0x)
+- Global keyboard shortcut (**Cmd+Shift+B**) to toggle from anywhere
+- Survives sleep/wake, lid close/open, and lock/unlock — brightness auto-restores
+- Starts with XDR off — rebooting always gives you a normal screen
+- Emergency kill switch (`xdr-boost --kill`) if anything goes wrong
+- Single binary, no dependencies, ~250 lines of Swift
+- Launch agent for auto-start on login
+
 ## How it works
 
 MacBook Pro displays can output up to 1600 nits, but macOS caps regular desktop content at ~500 nits. The extra brightness is reserved for HDR content.
