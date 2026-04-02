@@ -9,7 +9,7 @@ Unlocks the full brightness of your Liquid Retina XDR display beyond the standar
 - Boosts screen brightness beyond the standard 500 nit SDR limit using XDR hardware
 - No white tint or washed-out colors — uses multiply compositing to preserve colors perfectly
 - Menu bar icon with brightness presets (1.5x, 2.0x, 3.0x, 4.0x)
-- Global keyboard shortcut (**Cmd+Shift+B**) to toggle from anywhere
+- Global keyboard shortcut (**Ctrl+Option+Cmd+V**) to toggle from anywhere
 - Survives sleep/wake, lid close/open, and lock/unlock — brightness auto-restores
 - Starts with XDR off — rebooting always gives you a normal screen
 - Emergency kill switch (`xdr-boost --kill`) if anything goes wrong
@@ -74,7 +74,7 @@ Click the **☀** icon in your menu bar to:
 
 ### Keyboard shortcut
 
-**Cmd+Shift+B** — toggle XDR brightness on/off from anywhere, no need to find the menu bar icon.
+**Ctrl+Option+Cmd+V** — toggle XDR brightness on/off from anywhere, no need to find the menu bar icon.
 
 ### Emergency kill
 

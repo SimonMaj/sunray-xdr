@@ -66,21 +66,21 @@ class XDRApp: NSObject, NSApplicationDelegate {
         setupStatusBar()
         registerGlobalHotkey()
         observeSleepWake()
-        fputs("XDR Boost ready — click menu bar icon or press Cmd+Shift+B to toggle\n", stderr)
-        fputs("Emergency kill: run `xdr-boost --kill` or press Cmd+Shift+B\n", stderr)
+        fputs("XDR Boost ready — click menu bar icon or press Ctrl+Option+Cmd+V to toggle\n", stderr)
+        fputs("Emergency kill: run `xdr-boost --kill` or press Ctrl+Option+Cmd+V\n", stderr)
         fputs("Max EDR: \(maxEDR)x\n", stderr)
     }
 
-    // MARK: - Global Hotkey (Cmd+Shift+B)
+    // MARK: - Global Hotkey (Ctrl+Option+Cmd+V)
 
     func registerGlobalHotkey() {
         let hotkeyID = EventHotKeyID(signature: OSType(0x58445242), id: 1) // "XDRB"
         var ref: EventHotKeyRef?
 
-        // Cmd+Shift+B  (kVK_ANSI_B = 0x0B)
+        // Ctrl+Option+Cmd+V  (kVK_ANSI_V = 0x09)
         let status = RegisterEventHotKey(
-            UInt32(kVK_ANSI_B),
-            UInt32(cmdKey | shiftKey),
+            UInt32(kVK_ANSI_V),
+            UInt32(controlKey | optionKey | cmdKey),
             hotkeyID,
             GetApplicationEventTarget(),
             0,
@@ -97,7 +97,7 @@ class XDRApp: NSObject, NSApplicationDelegate {
                 return noErr
             }, 1, &eventType, Unmanaged.passUnretained(self).toOpaque(), nil)
         } else {
-            fputs("Could not register global hotkey (Cmd+Shift+B)\n", stderr)
+            fputs("Could not register global hotkey (Ctrl+Option+Cmd+V)\n", stderr)
         }
     }
 
@@ -115,7 +115,7 @@ class XDRApp: NSObject, NSApplicationDelegate {
         toggleItem.target = self
         menu.addItem(toggleItem)
 
-        shortcutItem = NSMenuItem(title: "Shortcut: Cmd+Shift+B", action: nil, keyEquivalent: "")
+        shortcutItem = NSMenuItem(title: "Shortcut: Ctrl+Option+Cmd+V", action: nil, keyEquivalent: "")
         shortcutItem.isEnabled = false
         menu.addItem(shortcutItem)
 
