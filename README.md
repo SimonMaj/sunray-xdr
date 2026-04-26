@@ -1,60 +1,66 @@
-# XDR Boost
+# Sunray XDR
 
-Free and open-source XDR brightness booster for MacBook Pro. Like [Vivid](https://www.getvivid.app/), but free.
+Sunray XDR is a polished macOS app fork of [levelsio/xdr-boost](https://github.com/levelsio/xdr-boost), adding a Liquid Glass menu bar UI, brightness slider, presets, launch-at-login, app icon, packaged builds, and visual polish for everyday users.
 
-Unlocks the full brightness of your Liquid Retina XDR display beyond the standard SDR limit. Your MacBook Pro can go up to 1600 nits — this tool lets you use it.
+Original concept and core XDR overlay technique by [Pieter Levels](https://github.com/levelsio). This fork keeps the spirit of the original tiny utility and turns it into a friendlier native Mac app.
 
 ## Features
 
 - Boosts screen brightness beyond the standard 500 nit SDR limit using XDR hardware
-- No white tint or washed-out colors — uses multiply compositing to preserve colors perfectly
-- Polished menu bar control panel with a live brightness slider
+- No white tint or washed-out colors; uses multiply compositing to preserve colors
+- Native Liquid Glass menu bar panel on macOS 26+
+- Live brightness slider with a safe 1x-3x range
 - Quick presets for Soft, 2x, and Max
+- Animated sun menu bar icon that reflects the current boost level
+- Subtle panel glow and sun-ray atmosphere when XDR is active
 - Saves your preferred boost level between launches
-- Global keyboard shortcut (**Ctrl+Option+Cmd+V**) to toggle from anywhere
-- Survives sleep/wake, lid close/open, and lock/unlock — brightness auto-restores
-- Starts with XDR off — rebooting always gives you a normal screen
-- Emergency kill switch (`xdr-boost --kill`) if anything goes wrong
+- Global keyboard shortcut: **Ctrl+Option+Cmd+V**
+- Optional start with macOS
+- Survives sleep/wake, lid close/open, lock/unlock, and display changes
+- Starts with XDR off so rebooting always gives you a normal screen
+- Emergency kill switch: `sunray-xdr --kill`
 - Single native Swift app, no dependencies
-- Launch agent for auto-start on login
 
-## How it works
+## How It Works
 
-MacBook Pro displays can output up to 1600 nits, but macOS caps regular desktop content at ~500 nits. The extra brightness is reserved for HDR content.
+MacBook Pro displays can output up to 1600 nits, but macOS caps regular desktop content at about 500 nits. The extra brightness is reserved for HDR content.
 
-xdr-boost creates an invisible Metal overlay using `multiply` compositing with EDR (Extended Dynamic Range) values above 1.0. This triggers the display hardware to boost its backlight, making everything brighter while preserving colors perfectly — no white tint, no washed-out look.
+Sunray XDR creates an invisible Metal overlay using `multiply` compositing with EDR (Extended Dynamic Range) values above 1.0. This triggers the display hardware to boost its backlight, making everything brighter while preserving colors.
 
 ## Requirements
 
 - MacBook Pro with Liquid Retina XDR display (M1 Pro/Max or later)
 - macOS 12.0+
+- macOS 26+ for the full Liquid Glass panel effect
 
 ## Install
 
 ```bash
-git clone https://github.com/levelsio/xdr-boost.git
-cd xdr-boost
+git clone https://github.com/0Synce/sunray-xdr.git
+cd sunray-xdr
 make app
-open ".build/XDR Boost.app"
+open ".build/Sunray XDR.app"
 ```
 
-The runnable macOS app will be at `.build/XDR Boost.app`.
+The runnable macOS app will be at `.build/Sunray XDR.app`.
 
-### Command-line binary
+### Command-Line Binary
 
 ```bash
 make build
 ```
 
-The binary will be at `.build/xdr-boost`.
+The binary will be at `.build/sunray-xdr`.
 
-### Install to PATH
+### Install To PATH
 
 ```bash
 sudo make install
 ```
 
-### Start on login
+### Start On Login
+
+Use the **Start with macOS** toggle in the app, or:
 
 ```bash
 sudo make install
@@ -72,50 +78,55 @@ sudo make uninstall
 
 ```bash
 # Run the macOS app
-open ".build/XDR Boost.app"
+open ".build/Sunray XDR.app"
 
 # Or run the command-line binary with menu bar icon
-xdr-boost
+sunray-xdr
 
 # Run with custom boost level
-xdr-boost 3.0
+sunray-xdr 2.5
 ```
 
-Click the **sun** icon in your menu bar to:
+Click the sun icon in your menu bar to:
+
 - Toggle XDR brightness on/off
 - Fine-tune brightness with the slider
 - Choose quick presets
+- Enable start with macOS
 - Quit
 
-### Keyboard shortcut
+### Keyboard Shortcut
 
-**Ctrl+Option+Cmd+V** — toggle XDR brightness on/off from anywhere, no need to find the menu bar icon.
+**Ctrl+Option+Cmd+V** toggles XDR brightness on/off from anywhere.
 
-### Emergency kill
+### Emergency Kill
 
-If something goes wrong and you can't see your screen:
+If something goes wrong and you cannot see your screen:
 
 ```bash
-# From terminal (even blind-type it)
-xdr-boost --kill
-
-# Or just
-pkill xdr-boost
+sunray-xdr --kill
 ```
 
-The app always starts with XDR **off** — you have to manually turn it on. So rebooting will always give you a normal screen.
+The kill switch also looks for older `xdr-boost` process names for compatibility.
 
-### Sleep, lid close, and lock screen
+## Sleep, Lid Close, And Lock Screen
 
-A common problem with XDR brightness apps is that closing your laptop or locking the screen kills the brightness boost, and it doesn't come back when you return. xdr-boost fixes this with a watchdog that automatically restores your brightness within a few seconds after:
+A common problem with XDR brightness apps is that closing your laptop or locking the screen kills the brightness boost, and it does not come back when you return. Sunray XDR uses a watchdog to automatically restore brightness after:
 
 - Closing and reopening the laptop lid
 - Locking and unlocking the screen
 - Sleep and wake
-- Plugging/unplugging external displays
+- Plugging or unplugging external displays
+- Mission Control / Space changes
 
-If you turned XDR on, it stays on — no matter what.
+If you turned XDR on, it stays on.
+
+## Credits
+
+Sunray XDR is based on [levelsio/xdr-boost](https://github.com/levelsio/xdr-boost).
+
+Original concept and core XDR overlay technique by [Pieter Levels](https://github.com/levelsio). This fork adds the native macOS app experience, Liquid Glass UI, slider, presets, start-at-login support, packaging, icon, and visual refinements.
 
 ## License
 
-MIT
+MIT. See [LICENSE](LICENSE).

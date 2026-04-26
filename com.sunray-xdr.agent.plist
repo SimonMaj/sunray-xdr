@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.xdr-boost</string>
+    <string>com.sunray-xdr</string>
     <key>ProgramArguments</key>
     <array>
         <string>__BINARY__</string>

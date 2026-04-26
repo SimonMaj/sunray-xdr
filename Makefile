@@ -1,9 +1,9 @@
 PREFIX ?= /usr/local
-BINARY = xdr-boost
+BINARY = sunray-xdr
 BUILD_DIR = .build
-APP_NAME = XDR Boost
+APP_NAME = Sunray XDR
 APP_BUNDLE = $(BUILD_DIR)/$(APP_NAME).app
-APP_EXECUTABLE = XDRBoost
+APP_EXECUTABLE = SunrayXDR
 
 .PHONY: all build app open install uninstall clean launch-agent remove-agent
 
@@ -39,13 +39,13 @@ uninstall: remove-agent
 launch-agent: install
 	@mkdir -p ~/Library/LaunchAgents
 	@sed "s|__BINARY__|$(PREFIX)/bin/$(BINARY)|g" \
-		com.xdr-boost.agent.plist > ~/Library/LaunchAgents/com.xdr-boost.agent.plist
-	launchctl load ~/Library/LaunchAgents/com.xdr-boost.agent.plist
-	@echo "xdr-boost will now start on login"
+		com.sunray-xdr.agent.plist > ~/Library/LaunchAgents/com.sunray-xdr.agent.plist
+	launchctl load ~/Library/LaunchAgents/com.sunray-xdr.agent.plist
+	@echo "sunray-xdr will now start on login"
 
 remove-agent:
-	-launchctl unload ~/Library/LaunchAgents/com.xdr-boost.agent.plist 2>/dev/null
-	rm -f ~/Library/LaunchAgents/com.xdr-boost.agent.plist
+	-launchctl unload ~/Library/LaunchAgents/com.sunray-xdr.agent.plist 2>/dev/null
+	rm -f ~/Library/LaunchAgents/com.sunray-xdr.agent.plist
 
 clean:
 	rm -rf $(BUILD_DIR)

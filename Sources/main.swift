@@ -105,11 +105,16 @@ private func matchingProcessIDs(named processName: String) -> [pid_t] {
 
 if CommandLine.arguments.contains("--kill") || CommandLine.arguments.contains("-k") {
     let currentPID = ProcessInfo.processInfo.processIdentifier
-    let targets = Set(matchingProcessIDs(named: "xdr-boost") + matchingProcessIDs(named: "XDRBoost"))
+    let targets = Set(
+        matchingProcessIDs(named: "sunray-xdr")
+        + matchingProcessIDs(named: "SunrayXDR")
+        + matchingProcessIDs(named: "xdr-boost")
+        + matchingProcessIDs(named: "XDRBoost")
+    )
     for pid in targets where pid != currentPID {
         kill(pid, SIGTERM)
     }
-    fputs("All xdr-boost instances killed\n", stderr)
+    fputs("All Sunray XDR instances killed\n", stderr)
     exit(0)
 }
 
@@ -200,8 +205,8 @@ final class XDRApp: NSObject, NSApplicationDelegate, ObservableObject {
         registerGlobalHotkey()
         observeSystemEvents()
 
-        fputs("XDR Boost ready — click the menu bar icon or press Ctrl+Option+Cmd+V\n", stderr)
-        fputs("Emergency kill: run `xdr-boost --kill`\n", stderr)
+        fputs("Sunray XDR ready — click the menu bar icon or press Ctrl+Option+Cmd+V\n", stderr)
+        fputs("Emergency kill: run `sunray-xdr --kill`\n", stderr)
         fputs("Boost range: 1x-\(formattedBoost(maxBoostLevel)) (display EDR headroom: \(formattedBoost(displayEDRHeadroom)))\n", stderr)
     }
 
@@ -332,8 +337,8 @@ final class XDRApp: NSObject, NSApplicationDelegate, ObservableObject {
         button.image = sunStatusImage(boostLevel: effectiveBoostLevel, isActive: isActive)
         button.title = ""
         button.toolTip = isSupported
-            ? "XDR Boost: \(isActive ? "On" : "Off")"
-            : "XDR Boost: unsupported display"
+            ? "Sunray XDR: \(isActive ? "On" : "Off")"
+            : "Sunray XDR: unsupported display"
     }
 
     private func syncUI() {
@@ -554,11 +559,17 @@ final class XDRApp: NSObject, NSApplicationDelegate, ObservableObject {
 
     private var launchAgentURL: URL {
         FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Library/LaunchAgents/com.sunray-xdr.agent.plist")
+    }
+
+    private var legacyLaunchAgentURL: URL {
+        FileManager.default.homeDirectoryForCurrentUser
             .appendingPathComponent("Library/LaunchAgents/com.xdr-boost.agent.plist")
     }
 
     var startsAtLogin: Bool {
         FileManager.default.fileExists(atPath: launchAgentURL.path)
+            || FileManager.default.fileExists(atPath: legacyLaunchAgentURL.path)
     }
 
     func setStartsAtLogin(_ enabled: Bool) {
@@ -572,9 +583,10 @@ final class XDRApp: NSObject, NSApplicationDelegate, ObservableObject {
 
     private func installLaunchAgent() {
         guard let executablePath = Bundle.main.executableURL?.path else { return }
+        removeLegacyLaunchAgent()
 
         let plist: [String: Any] = [
-            "Label": "com.xdr-boost",
+            "Label": "com.sunray-xdr",
             "ProgramArguments": [executablePath],
             "RunAtLoad": true,
             "ProcessType": "Interactive"
@@ -599,10 +611,16 @@ final class XDRApp: NSObject, NSApplicationDelegate, ObservableObject {
             if FileManager.default.fileExists(atPath: launchAgentURL.path) {
                 try FileManager.default.removeItem(at: launchAgentURL)
             }
+            removeLegacyLaunchAgent()
             fputs("Start at login disabled\n", stderr)
         } catch {
             fputs("Could not disable start at login: \(error.localizedDescription)\n", stderr)
         }
+    }
+
+    private func removeLegacyLaunchAgent() {
+        runProcess("/bin/launchctl", ["unload", legacyLaunchAgentURL.path])
+        try? FileManager.default.removeItem(at: legacyLaunchAgentURL)
     }
 
     @objc func quit() {
@@ -915,7 +933,7 @@ private struct BoostPanelView: View {
                 .animation(.spring(response: 0.24, dampingFraction: 0.7), value: app.isActive)
 
             VStack(alignment: .leading, spacing: 1) {
-                Text("XDR Boost")
+                Text("Sunray XDR")
                     .font(.system(size: 16, weight: .semibold))
                 Text(app.isSupported ? "Liquid Retina XDR" : "XDR unavailable")
                     .font(.system(size: 11, weight: .medium))
@@ -934,7 +952,7 @@ private struct BoostPanelView: View {
             }
             .buttonStyle(.plain)
             .foregroundStyle(.secondary)
-            .help("Shut down XDR Boost")
+            .help("Shut down Sunray XDR")
         }
     }
 

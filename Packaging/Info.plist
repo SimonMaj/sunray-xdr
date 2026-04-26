@@ -5,17 +5,17 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
     <key>CFBundleDisplayName</key>
-    <string>XDR Boost</string>
+    <string>Sunray XDR</string>
     <key>CFBundleExecutable</key>
-    <string>XDRBoost</string>
+    <string>SunrayXDR</string>
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
     <key>CFBundleIdentifier</key>
-    <string>com.xdr-boost.app</string>
+    <string>app.sunray-xdr</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>XDR Boost</string>
+    <string>Sunray XDR</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
