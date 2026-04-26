@@ -1,5 +1,7 @@
 # Sunray XDR
 
+![Sunray XDR demo](Assets/sunray-xdr-demo.gif)
+
 Sunray XDR is a polished macOS app fork of [levelsio/xdr-boost](https://github.com/levelsio/xdr-boost), adding a Liquid Glass menu bar UI, brightness slider, presets, launch-at-login, app icon, packaged builds, and visual polish for everyday users.
 
 Original concept and core XDR overlay technique by [Pieter Levels](https://github.com/levelsio). This fork keeps the spirit of the original tiny utility and turns it into a friendlier native Mac app.
@@ -35,14 +37,21 @@ Sunray XDR creates an invisible Metal overlay using `multiply` compositing with 
 
 ## Install
 
+### Easy Install
+
+Download the repository and double-click `Install.command`.
+
+The installer builds Sunray XDR, copies it to `/Applications/Sunray XDR.app`, verifies the app signature, and opens it.
+
+### Manual Install
+
 ```bash
 git clone https://github.com/0Synce/sunray-xdr.git
 cd sunray-xdr
-make app
-open ".build/Sunray XDR.app"
+./install.sh
 ```
 
-The runnable macOS app will be at `.build/Sunray XDR.app`.
+The built app will also be available at `.build/Sunray XDR.app`.
 
 ### Command-Line Binary
 
