@@ -4,8 +4,9 @@ BUILD_DIR = .build
 APP_NAME = Sunray XDR
 APP_BUNDLE = $(BUILD_DIR)/$(APP_NAME).app
 APP_EXECUTABLE = SunrayXDR
+VERSION ?= $(shell /usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" Packaging/Info.plist)
 
-.PHONY: all build app open install uninstall clean launch-agent remove-agent
+.PHONY: all build app dmg open install uninstall clean launch-agent remove-agent
 
 all: app
 
@@ -24,6 +25,9 @@ app: build
 	chmod 755 "$(APP_BUNDLE)/Contents/MacOS/$(APP_EXECUTABLE)"
 	@codesign --force --deep --sign - "$(APP_BUNDLE)" >/dev/null
 	@echo "Built $(APP_BUNDLE)"
+
+dmg: app
+	./Packaging/create-dmg.sh "$(APP_BUNDLE)" "$(VERSION)"
 
 open: app
 	open "$(APP_BUNDLE)"
