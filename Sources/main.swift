@@ -14,6 +14,29 @@ private func formattedBoost(_ value: Double) -> String {
         : String(format: "%.1fx", rounded)
 }
 
+private func versionComponents(_ version: String) -> [Int] {
+    version
+        .trimmingCharacters(in: CharacterSet(charactersIn: "vV"))
+        .split(separator: ".")
+        .map { Int($0) ?? 0 }
+}
+
+private func isVersion(_ candidate: String, newerThan current: String) -> Bool {
+    let lhs = versionComponents(candidate)
+    let rhs = versionComponents(current)
+    let count = max(lhs.count, rhs.count)
+
+    for index in 0..<count {
+        let left = index < lhs.count ? lhs[index] : 0
+        let right = index < rhs.count ? rhs[index] : 0
+        if left != right {
+            return left > right
+        }
+    }
+
+    return false
+}
+
 private var sunStatusImageCache: [String: NSImage] = [:]
 
 private func sunStatusImage(boostLevel: Double, isActive: Bool) -> NSImage {
@@ -571,8 +594,63 @@ final class XDRApp: NSObject, NSApplicationDelegate, ObservableObject {
     }
 
     func checkForUpdates() {
-        if let url = URL(string: "https://github.com/SimonMaj/sunray-xdr/releases/latest") {
-            NSWorkspace.shared.open(url)
+        guard let url = URL(string: "https://api.github.com/repos/SimonMaj/sunray-xdr/releases/latest") else { return }
+
+        let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.2"
+        let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 8)
+
+        URLSession.shared.dataTask(with: request) { data, _, error in
+            guard error == nil,
+                  let data,
+                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let tagName = json["tag_name"] as? String,
+                  let releaseURLString = json["html_url"] as? String,
+                  let releaseURL = URL(string: releaseURLString) else {
+                DispatchQueue.main.async {
+                    self.showUpdateAlert(
+                        title: "Could not check for updates",
+                        message: "Open GitHub Releases instead?",
+                        releaseURL: URL(string: "https://github.com/SimonMaj/sunray-xdr/releases")
+                    )
+                }
+                return
+            }
+
+            DispatchQueue.main.async {
+                if isVersion(tagName, newerThan: currentVersion) {
+                    self.showUpdateAlert(
+                        title: "Update available",
+                        message: "Sunray XDR \(tagName) is available. You have \(currentVersion).",
+                        releaseURL: releaseURL
+                    )
+                } else {
+                    self.showUpdateAlert(
+                        title: "You're up to date",
+                        message: "Sunray XDR \(currentVersion) is the latest version.",
+                        releaseURL: nil
+                    )
+                }
+            }
+        }.resume()
+    }
+
+    private func showUpdateAlert(title: String, message: String, releaseURL: URL?) {
+        let alert = NSAlert()
+        alert.messageText = title
+        alert.informativeText = message
+        alert.alertStyle = .informational
+
+        if releaseURL != nil {
+            alert.addButton(withTitle: "Open Releases")
+            alert.addButton(withTitle: "OK")
+        } else {
+            alert.addButton(withTitle: "OK")
+        }
+
+        NSApp.activate(ignoringOtherApps: true)
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn, let releaseURL {
+            NSWorkspace.shared.open(releaseURL)
         }
     }
 
@@ -889,6 +967,57 @@ private struct SolarAtmosphereView: View {
     }
 }
 
+private struct BoostSlider: View {
+    @Binding var value: Double
+    let range: ClosedRange<Double>
+    let isActive: Bool
+    let isEnabled: Bool
+
+    var body: some View {
+        GeometryReader { proxy in
+            let width = max(proxy.size.width, 1)
+            let progress = CGFloat((value - range.lowerBound) / (range.upperBound - range.lowerBound))
+                .clamped(to: 0...1)
+            let knobSize: CGFloat = 20
+            let knobX = progress * (width - knobSize) + knobSize / 2
+
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(Color.primary.opacity(0.14))
+                    .frame(height: 6)
+
+                Capsule()
+                    .fill((isActive ? Color.yellow : Color.secondary).opacity(isActive ? 0.82 : 0.42))
+                    .frame(width: max(knobX, 6), height: 6)
+
+                Circle()
+                    .fill(Color.white.opacity(isEnabled ? 0.94 : 0.52))
+                    .frame(width: knobSize, height: knobSize)
+                    .shadow(color: Color.black.opacity(0.22), radius: 3, y: 1)
+                    .position(x: knobX, y: proxy.size.height / 2)
+            }
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { gesture in
+                        guard isEnabled else { return }
+                        let clampedX = min(max(gesture.location.x, knobSize / 2), width - knobSize / 2)
+                        let nextProgress = Double((clampedX - knobSize / 2) / (width - knobSize))
+                        value = range.lowerBound + nextProgress * (range.upperBound - range.lowerBound)
+                    }
+            )
+        }
+        .frame(height: 24)
+        .opacity(isEnabled ? 1 : 0.48)
+    }
+}
+
+private extension CGFloat {
+    func clamped(to range: ClosedRange<CGFloat>) -> CGFloat {
+        Swift.min(Swift.max(self, range.lowerBound), range.upperBound)
+    }
+}
+
 private struct BoostPanelView: View {
     @ObservedObject var app: XDRApp
     @State private var activationGlow = false
@@ -1035,9 +1164,12 @@ private struct BoostPanelView: View {
                     .disabled(!app.isSupported)
             }
 
-            Slider(value: boostBinding, in: 1.0...max(app.maxBoostLevel, 1.1))
-                .disabled(!app.isSupported)
-                .tint(.yellow)
+            BoostSlider(
+                value: boostBinding,
+                range: 1.0...max(app.maxBoostLevel, 1.1),
+                isActive: app.isActive,
+                isEnabled: app.isSupported
+            )
 
             HStack {
                 Text("1x")
@@ -1069,14 +1201,16 @@ private struct BoostPanelView: View {
     private var settings: some View {
         VStack(spacing: 8) {
             HStack(spacing: 8) {
-                Text("Start with macOS")
-                    .font(.system(size: 12, weight: .medium))
+                HStack(spacing: 10) {
+                    Text("Start with macOS")
+                        .font(.system(size: 12, weight: .medium))
+
+                    Toggle("", isOn: loginBinding)
+                        .toggleStyle(.switch)
+                        .labelsHidden()
+                }
 
                 Spacer()
-
-                Toggle("", isOn: loginBinding)
-                    .toggleStyle(.switch)
-                    .labelsHidden()
 
                 utilityIconButton(
                     symbol: "rectangle.split.2x1",
