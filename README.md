@@ -20,6 +20,8 @@ Original concept and core XDR overlay technique by [Pieter Levels](https://githu
 - Saves your preferred boost level between launches
 - Global keyboard shortcut: **Ctrl+Option+Cmd+V**
 - Optional start with macOS
+- Split preview mode to compare boosted and normal brightness
+- Check for updates button
 - Survives sleep/wake, lid close/open, lock/unlock, and display changes
 - Starts with XDR off so rebooting always gives you a normal screen
 - Emergency kill switch: `sunray-xdr --kill`
