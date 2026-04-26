@@ -894,9 +894,7 @@ private struct BoostPanelView: View {
 
                 panelContent
                     .frame(width: 292)
-                    .padding(.horizontal, 18)
-                    .padding(.top, 22)
-                    .padding(.bottom, 20)
+                    .padding(18)
             }
                 .frame(width: 330, height: 344)
                 .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
@@ -925,7 +923,6 @@ private struct BoostPanelView: View {
             Divider().opacity(0.26)
             settings
         }
-        .frame(maxHeight: .infinity, alignment: .top)
     }
 
     private var header: some View {
@@ -1044,17 +1041,18 @@ private struct BoostPanelView: View {
             Divider().opacity(0.34)
 
             compactLabel("keyboard", "Ctrl Option Cmd V")
-            compactLabel("eye.slash", "Hidden from screenshots")
 
-            if !app.isSupported {
-                Text("Requires a MacBook Pro Liquid Retina XDR display.")
+            HStack(spacing: 7) {
+                Image(systemName: "eye.slash")
                     .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(.red)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
+                    .foregroundStyle(.tertiary)
+                    .frame(width: 14)
+                Text("Hidden from screenshots")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(.secondary)
 
-            HStack {
                 Spacer()
+
                 Button {
                     app.quit()
                 } label: {
@@ -1064,16 +1062,19 @@ private struct BoostPanelView: View {
                         Text("Exit")
                             .font(.system(size: 10, weight: .medium))
                     }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
                     .contentShape(Capsule())
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.tertiary)
                 .help("Exit Sunray XDR")
             }
-            .padding(.top, 4)
-            .padding(.trailing, 3)
+
+            if !app.isSupported {
+                Text("Requires a MacBook Pro Liquid Retina XDR display.")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(.red)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
     }
 
