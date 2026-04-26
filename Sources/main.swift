@@ -894,7 +894,9 @@ private struct BoostPanelView: View {
 
                 panelContent
                     .frame(width: 292)
-                    .padding(18)
+                    .padding(.horizontal, 18)
+                    .padding(.top, 22)
+                    .padding(.bottom, 20)
             }
                 .frame(width: 330, height: 344)
                 .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
@@ -923,6 +925,7 @@ private struct BoostPanelView: View {
             Divider().opacity(0.26)
             settings
         }
+        .frame(maxHeight: .infinity, alignment: .top)
     }
 
     private var header: some View {
@@ -1069,6 +1072,8 @@ private struct BoostPanelView: View {
                 .foregroundStyle(.tertiary)
                 .help("Exit Sunray XDR")
             }
+            .padding(.top, 4)
+            .padding(.trailing, 3)
         }
     }
 
