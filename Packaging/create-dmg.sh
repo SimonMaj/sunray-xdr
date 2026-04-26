@@ -68,3 +68,13 @@ hdiutil convert "${RW_DMG}" \
 
 hdiutil verify "${DIST_DIR}/${DMG_NAME}" >/dev/null
 echo "Built ${DIST_DIR}/${DMG_NAME}"
+
+if [ -n "${NOTARY_PROFILE:-}" ]; then
+    echo "Submitting ${DMG_NAME} for notarization..."
+    xcrun notarytool submit "${DIST_DIR}/${DMG_NAME}" \
+        --keychain-profile "${NOTARY_PROFILE}" \
+        --wait
+    xcrun stapler staple "${DIST_DIR}/${DMG_NAME}"
+    xcrun stapler validate "${DIST_DIR}/${DMG_NAME}"
+    echo "Notarized ${DIST_DIR}/${DMG_NAME}"
+fi
